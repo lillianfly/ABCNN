@@ -6,8 +6,7 @@ import gensim
 class Word2Vec():
     def __init__(self):
         # Load Google's pre-trained Word2Vec model.
-        self.model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin',
-                                                                     binary=True)
+        self.model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin',binary=True)
         self.unknowns = np.random.uniform(-0.01, 0.01, 300).astype("float32")
 
     def get(self, word):
@@ -49,7 +48,7 @@ class Data():
             s1 = self.s1s[self.index + i]
             s2 = self.s2s[self.index + i]
 
-            # [1, d0, s]
+            # [1, d0, s]  [0,0]维度一不需要填，[0,self.max_len - len(s1)]]维
             s1_mats.append(np.expand_dims(np.pad(np.column_stack([self.word2vec.get(w) for w in s1]),
                                                  [[0, 0], [0, self.max_len - len(s1)]],
                                                  "constant"), axis=0))
@@ -108,9 +107,10 @@ class MSRP(Data):
         self.data_size = len(self.s1s)
         self.num_features = len(self.features[0])
 
-
+# 得到数据结构s1s问题样本　s2s答案样本 label是否匹配
 class WikiQA(Data):
     def open_file(self, mode):
+       # with open("./WikiQA_Corpus/WikiQA-" + mode + ".txt", "r") as f:
         with open("./WikiQA_Corpus/WikiQA-" + mode + ".txt", "r", encoding="utf-8") as f:
             stopwords = nltk.corpus.stopwords.words("english")
 
@@ -145,3 +145,7 @@ class WikiQA(Data):
             self.features[i].append(wgt_word_cnt)
 
         self.num_features = len(self.features[0])
+
+
+# 额外的feature
+# 1的长度　2的长度　12去停用词之后相同词的长度　句子每个词的idf相加值

@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import sys
+import requests
 
 from preprocess import Word2Vec, MSRP, WikiQA
 from ABCNN import ABCNN
